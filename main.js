@@ -3,24 +3,26 @@ objects = [];
 status = "";
 
 function preload() {
-    song = loadsound("alarm.mp3");
+    song = loadSound("alarm.mp3");
 }
 
 function setup() {
-    canvas = createcanvas(380, 380);
+    canvas = createCanvas(380, 380);
     canvas.center();
-    video = createcapture(video);
+    video = createCapture(VIDEO);
     video.size(380, 380);
     video.hide();
-    objectdetector = ml5.objectdetector('cocossd', modelloaded);
-    document.getelementbyid("status").innerhtml = "status : detecting objects";
+    objectDetector = ml5.objectDetector('cocossd', modelLoaded);
+    document.getElementById("status").innerHTML = "Status : Detecting   Objects";
 }
 
-function modelloaded() {
-    console.log("model loaded!")
+function modelLoaded() {
+    console.log("model loaded!");
+    status = true;
+    objectDetector.detect(video, gotResult);
 }
 
-function gotresult(error, results) {
+function gotResult(error, results) {
     if (error) {
         console.log(error);
     }
@@ -34,9 +36,9 @@ function draw() {
         r = random(255);
         g = random(255);
         b = random(255);
-        objectdetector.detect(video, gotresult);
+        objectdetector.detect(video, gotResult);
         for (i = 0; i < objects.length; i++) {
-            document.getelementbyid("status").innerhtml = "status : object detected";
+            document.getElementById("status").innerHTML = "status : object detected";
             fill(color(r, g, b));
             percent = floor(objects[i].confidence * 100);
             text(objects[i].label + " " + percent + "%", objects[i].x + 15, objects[i].y + 15);
@@ -44,17 +46,17 @@ function draw() {
             stroke(color(r, g, b));
             rect(objects[i].x, objects[i].y, objects[i].width, objects[i].height);
             if (objects[i].label == "person") {
-                document.getelementbyid("number_of_objects").innerhtml = "baby found";
+                document.getElementById("number_of_objects").innerHTML = "baby found";
                 console.log("stop");
                 song.stop();
             } else {
-                document.getelementbyid("number_of_objects").innerhtml = "baby not found";
+                document.getElementById("number_of_objects").innerHTML = "baby not found";
                 console.log("play");
                 song.play();
             }
         }
         if (objects.length == 0) {
-            document.getelementbyid("number_of_objects").innerhtml = "baby not found";
+            document.getElementById("number_of_objects").innerHTML = "baby not found";
             console.log("play");
             song.play();
         }
